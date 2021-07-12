@@ -18,11 +18,13 @@ struct GRBody: View {
             VStack {
                 HStack {
                     GRTrackLabels()
+                    
                     Spacer()
+                    
                     GRControls()
                         .fixedSize(horizontal: true, vertical: true)
                         .frame(width: 112, height: 44, alignment: .trailing)
-                        .padding(.leading, 5)
+                        .padding(.leading, 10)
                         .environment(\.layoutDirection, .leftToRight)
                 }
             }
