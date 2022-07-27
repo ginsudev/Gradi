@@ -23,6 +23,7 @@ struct GRBody: View {
                         .fixedSize(horizontal: true, vertical: true)
                         .frame(width: 112, height: 44, alignment: .trailing)
                         .padding(.leading, 5)
+                        .environment(\.layoutDirection, .leftToRight)
                 }
             }
             .foregroundColor(Color(mediaModel.foregroundColour))

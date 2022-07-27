@@ -68,6 +68,7 @@ struct GRTimeline: View {
                 .foregroundColor(Color(mediaModel.foregroundColour))
                 .font(.caption2)
         }
+        .environment(\.layoutDirection, .leftToRight)
     }
     
     func timeFormatted(_ totalSeconds: Int) -> String {
