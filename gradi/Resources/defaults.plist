@@ -10,5 +10,7 @@
 	<real>120</real>
 	<key>fontType</key>
 	<integer>2</integer>
+	<key>showTimeline</key>
+	<false/>
 </dict>
 </plist>

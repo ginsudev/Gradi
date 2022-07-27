@@ -15,13 +15,15 @@ struct GRBody: View {
         VStack {
             Spacer()
             
-            HStack {
-                GRTrackLabels()
-                Spacer()
-                GRControls()
-                    .fixedSize(horizontal: true, vertical: true)
-                    .frame(width: 112, height: 44, alignment: .trailing)
-                    .padding(.leading, 5)
+            VStack {
+                HStack {
+                    GRTrackLabels()
+                    Spacer()
+                    GRControls()
+                        .fixedSize(horizontal: true, vertical: true)
+                        .frame(width: 112, height: 44, alignment: .trailing)
+                        .padding(.leading, 5)
+                }
             }
             .foregroundColor(Color(mediaModel.foregroundColour))
             

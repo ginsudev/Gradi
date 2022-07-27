@@ -24,6 +24,9 @@ final class GRMediaModel: ObservableObject {
         }
     }
     
+    @Published var trackLength: Float = 0.0
+    @Published var elapsedTime: Float = 0.0
+    
     //Dynamic icons
     @Published var playPauseIcon = UIImage(named: "/Library/Application Support/Gradi/pause.png")
 

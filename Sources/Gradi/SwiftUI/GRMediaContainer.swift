@@ -20,8 +20,16 @@ struct GRMediaContainer: View {
                 GRHeader()
                     .frame(maxWidth: .infinity, maxHeight: 18)
                     .padding(.trailing, Settings.height - padding)
+                
                 GRBody()
                     .padding(.trailing, Settings.height - 17 - padding)
+                
+                if Settings.showTimeline {
+                    GRTimeline()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.trailing, Settings.height - 17 - padding)
+                }
+
                 Spacer()
             }
             .padding(padding)

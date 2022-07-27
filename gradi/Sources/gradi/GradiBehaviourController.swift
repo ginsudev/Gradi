@@ -3,7 +3,8 @@ import Foundation
 import gradiC
 
 class GradiBehaviourController: PSListController {
-    
+    private var name = "gradi"
+
     override var specifiers: NSMutableArray? {
         get {
             if let specifiers = value(forKey: "_specifiers") as? NSMutableArray {
@@ -127,20 +128,46 @@ class GradiBehaviourController: PSListController {
     }
     
     override func readPreferenceValue(_ specifier: PSSpecifier!) -> Any! {
-        let path = "/User/Library/Preferences/com.ginsu.gradi.plist"
-        let settings = NSMutableDictionary()
-        let pathDict = NSDictionary(contentsOfFile: path)
-        settings.addEntries(from: pathDict as! [AnyHashable : Any])
-        return ((settings[specifier.properties["key"]!]) != nil) ? settings[specifier.properties["key"]!] : specifier.properties["default"]
+        var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
+        
+        let plistURL = URL(fileURLWithPath: "/User/Library/Preferences/com.ginsu.\(name).plist")
+
+        guard let plistXML = try? Data(contentsOf: plistURL) else {
+            return specifier.properties["default"]
+        }
+        
+        guard let plistDict = try! PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: &propertyListFormat) as? [String : AnyObject] else {
+            return specifier.properties["default"]
+        }
+        
+        guard let value = plistDict[specifier.properties["key"] as! String] else {
+            return specifier.properties["default"]
+        }
+        
+        return value
     }
     
     override func setPreferenceValue(_ value: Any!, specifier: PSSpecifier!) {
-        let path = "/User/Library/Preferences/com.ginsu.gradi.plist"
-        let settings = NSMutableDictionary()
-        let pathDict = NSDictionary(contentsOfFile: path)
-        settings.addEntries(from: pathDict as! [AnyHashable : Any])
-        settings.setObject(value!, forKey: specifier.properties["key"] as! NSCopying)
-        settings.write(toFile: path, atomically: true)
+        var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
+        
+        let plistURL = URL(fileURLWithPath: "/User/Library/Preferences/com.ginsu.\(name).plist")
+
+        guard let plistXML = try? Data(contentsOf: plistURL) else {
+            return
+        }
+        
+        guard var plistDict = try! PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: &propertyListFormat) as? [String : AnyObject] else {
+            return
+        }
+    
+        plistDict[specifier.properties["key"] as! String] = value! as AnyObject
+        
+        do {
+            let newData = try PropertyListSerialization.data(fromPropertyList: plistDict, format: propertyListFormat, options: 0)
+            try newData.write(to: plistURL)
+        } catch {
+            return
+        }
         
         if hasDynamicSpecifiers {
             if let specifierID = specifier.property(forKey: PSIDKey) as? String {

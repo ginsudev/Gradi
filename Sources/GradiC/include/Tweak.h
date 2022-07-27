@@ -74,10 +74,15 @@ struct SBIconImageInfo {
 
 @interface MRContentItemMetadata : NSObject
 @property (nonatomic,copy) NSString * title;
+@property (nonatomic,copy) NSString * trackArtistName;
+@property CGFloat calculatedPlaybackPosition;
+@property (assign,nonatomic) double duration;
+@property (assign,nonatomic) float playbackRate;
 @end
 
 @interface MRContentItem : NSObject
 @property (nonatomic,copy) MRContentItemMetadata * metadata;
+- (instancetype)initWithNowPlayingInfo:(NSDictionary *)nowPlayingInfo;
 @end
 
 @interface SBMediaController : NSObject
@@ -88,8 +93,20 @@ struct SBIconImageInfo {
 - (BOOL)changeTrack:(int)arg1 eventSource:(long long)arg2;
 - (BOOL)togglePlayPauseForEventSource:(long long)arg1;
 - (void)setNowPlayingInfo:(id)arg1;
+@end
+
+@interface SBFLockScreenDateView : UIView
 
 @end
+
+@interface SBFLockScreenDateViewController : UIViewController
+
+@end
+
+//@interface SBCoverSheetPresentationManager : NSObject
+//+ (instancetype)sharedInstance;
+//- (BOOL)isPresented;
+//@end
 
 @interface AVRoutePickerView (Private)
 -(void)_routePickerButtonTapped:(id)arg1;

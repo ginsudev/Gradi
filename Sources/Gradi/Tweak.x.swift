@@ -9,9 +9,11 @@ struct Settings {
     static var height: Double!
     static var cornerRadius: CGFloat!
     static var fontType: Font.Design!
+    static var showTimeline: Bool!
 }
 
 struct tweak: HookGroup {}
+struct timeline: HookGroup {}
 
 //MARK: - Gradi media player initialisation.
 class CSAdjunctItemView_Hook: ClassHook<CSAdjunctItemView> {
@@ -75,10 +77,16 @@ class SBMediaController_Hook: ClassHook<SBMediaController> {
         
         //Update play/pause button status.
         GRManager.sharedInstance.togglePlayPause(shouldPlay: !target.isPaused())
+        
+        if !target.isPaused() {
+            if !GRManager.sharedInstance.timerRunning {
+                GRManager.sharedInstance.toggleTimer(on: true)
+            }
+        }
     }
     
-    func _mediaRemoteNowPlayingInfoDidChange(_ info: NSDictionary) {
-        orig._mediaRemoteNowPlayingInfoDidChange(info)
+    func setNowPlayingInfo(_ info: NSDictionary) {
+        orig.setNowPlayingInfo(info)
         //Update current track info.
         GRManager.sharedInstance.updateInfo()
     }
@@ -98,25 +106,74 @@ class SpringBoard_Hook: ClassHook<SpringBoard> {
     }
 }
 
+class SBFLockScreenDateView_Hook: ClassHook<SBFLockScreenDateView> {
+    typealias Group = timeline
+
+    func _updateLabels() {
+        orig._updateLabels()
+        
+        guard SBMediaController.sharedInstance().nowPlayingApplication() != nil else {
+            return
+        }
+        
+        GRManager.sharedInstance.toggleTimer(on: true)
+    }
+}
+
+class SBFLockScreenDateViewController_Hook: ClassHook<SBFLockScreenDateViewController> {
+    typealias Group = timeline
+
+    func _startUpdateTimer() {
+        orig._startUpdateTimer()
+        
+        guard SBMediaController.sharedInstance().nowPlayingApplication() != nil else {
+            return
+        }
+        
+        GRManager.sharedInstance.toggleTimer(on: true)
+    }
+
+    func _stopUpdateTimer() {
+        orig._stopUpdateTimer()
+        GRManager.sharedInstance.toggleTimer(on: false)
+    }
+}
+
 //MARK: - Preferences
-func readPrefs() {
+fileprivate func prefsDict() -> [String : AnyObject]? {
+    var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
     
     let path = "/var/mobile/Library/Preferences/com.ginsu.gradi.plist"
     
     if !FileManager().fileExists(atPath: path) {
-        try? FileManager().copyItem(atPath: "Library/PreferenceBundles/gradi.bundle/defaults.plist", toPath: path)
+        try? FileManager().copyItem(atPath: "Library/PreferenceBundles/gradi.bundle/defaults.plist",
+                                    toPath: path)
     }
     
-    guard let dict = NSDictionary(contentsOfFile: path) else {
-        return
+    let plistURL = URL(fileURLWithPath: path)
+
+    guard let plistXML = try? Data(contentsOf: plistURL) else {
+        return nil
     }
+    
+    guard let plistDict = try! PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: &propertyListFormat) as? [String : AnyObject] else {
+        return nil
+    }
+    
+    return plistDict
+}
+
+fileprivate func readPrefs() {
+    
+    let dict = prefsDict() ?? [String : AnyObject]()
     
     //Reading values
-    Settings.isEnabled = dict.value(forKey: "isEnabled") as? Bool ?? true
-    Settings.height = dict.value(forKey: "height") as? Double ?? 120.0
-    Settings.cornerRadius = dict.value(forKey: "cornerRadius") as? CGFloat ?? 5.0
-    
-    let fontType = dict.value(forKey: "fontType") as? Int ?? 2
+    Settings.isEnabled = dict["isEnabled"] as? Bool ?? true
+    Settings.height = dict["height"] as? Double ?? 120.0
+    Settings.cornerRadius = dict["cornerRadius"] as? CGFloat ?? 5.0
+    Settings.showTimeline = dict["showTimeline"] as? Bool ?? false
+
+    let fontType = dict["fontType"] as? Int ?? 2
     switch fontType {
     case 1:
         Settings.fontType = .default
@@ -141,6 +198,10 @@ struct Gradi: Tweak {
         readPrefs()
         if (Settings.isEnabled) {
             tweak().activate()
+            
+            if Settings.showTimeline {
+                timeline().activate()
+            }
         }
     }
 }

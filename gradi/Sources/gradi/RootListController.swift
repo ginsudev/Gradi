@@ -1,7 +1,10 @@
 import Preferences
 import gradiC
+import Foundation
 
 class RootListController: PSListController {
+    private var name = "gradi"
+    
     override var specifiers: NSMutableArray? {
         get {
             if let specifiers = value(forKey: "_specifiers") as? NSMutableArray {
@@ -21,7 +24,7 @@ class RootListController: PSListController {
         super.viewDidLoad()
         self.table.keyboardDismissMode = .onDrag
 
-        if let icon = UIImage(named: "/Library/PreferenceBundles/gradi.bundle/PrefIcon.png") {
+        if let icon = UIImage(named: "/Library/PreferenceBundles/\(name).bundle/PrefIcon.png") {
             self.navigationItem.titleView = UIImageView(image: icon)
         }
         
@@ -30,20 +33,46 @@ class RootListController: PSListController {
     }
     
     override func readPreferenceValue(_ specifier: PSSpecifier!) -> Any! {
-        let path = "/User/Library/Preferences/com.ginsu.gradi.plist"
-        let settings = NSMutableDictionary()
-        let pathDict = NSDictionary(contentsOfFile: path)
-        settings.addEntries(from: pathDict as! [AnyHashable : Any])
-        return ((settings[specifier.properties["key"]!]) != nil) ? settings[specifier.properties["key"]!] : specifier.properties["default"]
+        var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
+        
+        let plistURL = URL(fileURLWithPath: "/User/Library/Preferences/com.ginsu.\(name).plist")
+
+        guard let plistXML = try? Data(contentsOf: plistURL) else {
+            return specifier.properties["default"]
+        }
+        
+        guard let plistDict = try! PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: &propertyListFormat) as? [String : AnyObject] else {
+            return specifier.properties["default"]
+        }
+        
+        guard let value = plistDict[specifier.properties["key"] as! String] else {
+            return specifier.properties["default"]
+        }
+        
+        return value
     }
     
     override func setPreferenceValue(_ value: Any!, specifier: PSSpecifier!) {
-        let path = "/User/Library/Preferences/com.ginsu.gradi.plist"
-        let settings = NSMutableDictionary()
-        let pathDict = NSDictionary(contentsOfFile: path)
-        settings.addEntries(from: pathDict as! [AnyHashable : Any])
-        settings.setObject(value!, forKey: specifier.properties["key"] as! NSCopying)
-        settings.write(toFile: path, atomically: true)
+        var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
+        
+        let plistURL = URL(fileURLWithPath: "/User/Library/Preferences/com.ginsu.\(name).plist")
+
+        guard let plistXML = try? Data(contentsOf: plistURL) else {
+            return
+        }
+        
+        guard var plistDict = try! PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: &propertyListFormat) as? [String : AnyObject] else {
+            return
+        }
+    
+        plistDict[specifier.properties["key"] as! String] = value! as AnyObject
+        
+        do {
+            let newData = try PropertyListSerialization.data(fromPropertyList: plistDict, format: propertyListFormat, options: 0)
+            try newData.write(to: plistURL)
+        } catch {
+            return
+        }
     }
     
     override func tableViewStyle() -> UITableView.Style {
@@ -60,7 +89,7 @@ class RootListController: PSListController {
                                 twitterHandle: "ginsudev",
                                 developerName: "Ginsu",
                                 tweakName: "Gradi",
-                                tweakVersion: "v2.0.0",
+                                tweakVersion: "v2.1",
                                 email: "njl02@outlook.com",
                                 discordURL: "https://discord.gg/BhdUyCbgkZ",
                                 donateURL: "https://paypal.me/xiaonuoya")
