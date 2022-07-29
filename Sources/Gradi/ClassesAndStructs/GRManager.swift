@@ -13,6 +13,7 @@ final class GRManager: NSObject {
     var timerRunning = false
     
     public func updateInfo() {
+        //Update track info (Artwork, title, artist, etc..).
         MRMediaRemoteGetNowPlayingInfo(.main, { information in
             guard let dict = information as? [String: AnyObject] else {
                 return
@@ -38,6 +39,7 @@ final class GRManager: NSObject {
     }
     
     @objc private func updateTimeline() {
+        //Update track progress & length.
         MRMediaRemoteGetNowPlayingInfo(.main, { information in
             guard let dict = information as? [String: AnyObject] else {
                 return
@@ -45,11 +47,6 @@ final class GRManager: NSObject {
             
             guard let contentItem = MRContentItem(nowPlayingInfo: dict) else {
                 return
-            }
-            
-            if !(contentItem.metadata.playbackRate > 0) {
-                self.timer.invalidate()
-                self.timerRunning = false
             }
             
             let playbackPosition = contentItem.metadata.calculatedPlaybackPosition
@@ -63,6 +60,7 @@ final class GRManager: NSObject {
     }
     
     public func toggleTimer(on enable: Bool) {
+        //Disable the timer if requested.
         guard enable else {
             if self.timer.isValid {
                 self.timer.invalidate()
@@ -72,21 +70,23 @@ final class GRManager: NSObject {
         }
         
         //One timer only
-        if self.timer.isValid {
-            self.timer.invalidate()
-            timerRunning = false
-        }
-        
-        guard !SBMediaController.sharedInstance().isPaused() else {
+        guard !self.timer.isValid else {
             return
         }
         
+        //Only start timer if media is playing.
+        guard SBMediaController.sharedInstance().nowPlayingApplication() != nil else {
+            return
+        }
+        
+        //Start timer.
         self.timer = Timer.scheduledTimer(timeInterval: 1,
                                      target: self,
                                      selector: #selector(self.updateTimeline),
                                      userInfo: nil,
                                      repeats: true)
         
+        //Update timer status.
         timerRunning = true
     }
     
@@ -97,16 +97,6 @@ final class GRManager: NSObject {
     
     public func setElapsedTime(_ time: Double) {
         MRMediaRemoteSetElapsedTime(time)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            //Resume timer if still playing...
-            
-            guard !SBMediaController.sharedInstance().isPaused() else {
-                return
-            }
-            
-            self.toggleTimer(on: true)
-        }
     }
     
     public func openNowPlayingApp() {

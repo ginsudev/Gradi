@@ -10,6 +10,7 @@ struct Settings {
     static var cornerRadius: CGFloat!
     static var fontType: Font.Design!
     static var showTimeline: Bool!
+    static var timelineHeight: CGFloat!
 }
 
 struct tweak: HookGroup {}
@@ -106,36 +107,43 @@ class SpringBoard_Hook: ClassHook<SpringBoard> {
     }
 }
 
-class SBFLockScreenDateView_Hook: ClassHook<SBFLockScreenDateView> {
+class SBLockScreenManager_Hook: ClassHook<SBLockScreenManager> {
     typealias Group = timeline
 
-    func _updateLabels() {
-        orig._updateLabels()
-        
-        guard SBMediaController.sharedInstance().nowPlayingApplication() != nil else {
-            return
-        }
-        
-        GRManager.sharedInstance.toggleTimer(on: true)
-    }
-}
-
-class SBFLockScreenDateViewController_Hook: ClassHook<SBFLockScreenDateViewController> {
-    typealias Group = timeline
-
-    func _startUpdateTimer() {
-        orig._startUpdateTimer()
-        
-        guard SBMediaController.sharedInstance().nowPlayingApplication() != nil else {
-            return
-        }
-        
-        GRManager.sharedInstance.toggleTimer(on: true)
-    }
-
-    func _stopUpdateTimer() {
-        orig._stopUpdateTimer()
+    @Property (.nonatomic, .retain) var screenOn: Bool = false
+    
+    func lockScreenViewControllerDidDismiss() {
+        orig.lockScreenViewControllerDidDismiss()
+        //Lock screen dismissed
         GRManager.sharedInstance.toggleTimer(on: false)
+    }
+    
+    func lockScreenViewControllerDidPresent() {
+        orig.lockScreenViewControllerDidPresent()
+        
+        guard screenOn else {
+            return
+        }
+        
+        //Lock screen presented
+        GRManager.sharedInstance.toggleTimer(on: true)
+    }
+    
+    func _handleBacklightLevelWillChange(_ arg1: NSNotification) {
+        orig._handleBacklightLevelWillChange(arg1)
+        
+        guard let userInfo = arg1.userInfo else {
+            return
+        }
+        
+        guard let updatedBacklightLevel = userInfo["SBBacklightNewFactorKey"] as? Int else {
+            return
+        }
+        
+        screenOn = updatedBacklightLevel != 0
+        
+        //Screen turned on/off.
+        GRManager.sharedInstance.toggleTimer(on: screenOn)
     }
 }
 
@@ -172,6 +180,7 @@ fileprivate func readPrefs() {
     Settings.height = dict["height"] as? Double ?? 120.0
     Settings.cornerRadius = dict["cornerRadius"] as? CGFloat ?? 5.0
     Settings.showTimeline = dict["showTimeline"] as? Bool ?? false
+    Settings.timelineHeight = dict["timelineHeight"] as? CGFloat ?? 5.0
 
     let fontType = dict["fontType"] as? Int ?? 2
     switch fontType {

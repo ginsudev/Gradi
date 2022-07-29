@@ -12,5 +12,7 @@
 	<integer>2</integer>
 	<key>showTimeline</key>
 	<false/>
+	<key>timelineHeight</key>
+	<real>5</real>
 </dict>
 </plist>

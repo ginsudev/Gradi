@@ -88,7 +88,7 @@
             <key>cell</key>
             <string>PSGroupCell</string>
             <key>label</key>
-            <string>Miscellaneous</string>
+            <string>Timeline</string>
             <key>footerText</key>
             <string>Adjust the media player's sizing and corner radius.</string>
         </dict>
@@ -107,6 +107,28 @@
 			<string>showTimeline</string>
 			<key>label</key>
 			<string>Show timeline</string>
+			<key>id</key>
+			<string>showTimelineStatus</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSTableCell</string>
+			<key>cellClass</key>
+			<string>GSStepperCell</string>
+			<key>title</key>
+			<string>Timeline height</string>
+			<key>default</key>
+			<real>5</real>
+			<key>defaults</key>
+			<string>com.ginsu.gradi</string>
+			<key>key</key>
+			<string>timelineHeight</string>
+			<key>min</key>
+			<real>0</real>
+			<key>max</key>
+			<real>25</real>
+			<key>dynamicRule</key>
+			<string>showTimelineStatus,s,1</string>
 		</dict>
 	</array>
 	<key>title</key>

@@ -11,7 +11,7 @@ struct GRTimeline: View {
     
     @EnvironmentObject var mediaModel: GRMediaModel
 
-    var sliderHeight = 5.0
+    @State private var dragging: Bool = false
     @State private var rect = CGRect() //Outer width
     @State var width: Float = 0.0 //Inner width.
     @State var elapsedText = "0:00"
@@ -29,11 +29,13 @@ struct GRTimeline: View {
                 
                 //Background of bar
                 Rectangle()
-                    .frame(height: sliderHeight)
+                    .frame(height: Settings.timelineHeight)
                     .background(GeometryGetter(rect: $rect))
                     .foregroundColor(.gray)
                     .gesture(DragGesture(minimumDistance: 1)
                         .onChanged({ value in
+                            
+                            dragging = true
                             
                             if value.location.x < 0 {
                                 width = 0
@@ -46,22 +48,27 @@ struct GRTimeline: View {
                         })
                         
                         .onEnded({ value in
+                            dragging = false
+                            
                             let progress = (mediaModel.trackLength / Float(rect.width)) * Float(width)
                             GRManager.sharedInstance.setElapsedTime(Double(progress))
                         }))
                 
                 //Foreground of bar
                 Rectangle()
-                    .frame(width: CGFloat(width), height: sliderHeight)
+                    .frame(width: CGFloat(width), height: Settings.timelineHeight)
                     .foregroundColor(Color(mediaModel.foregroundColour))
                     .allowsHitTesting(false)
                     .onChange(of: mediaModel.elapsedTime) { newValue in
-                        width = (Float(rect.width) / mediaModel.trackLength) * mediaModel.elapsedTime
+                        if !dragging {
+                            width = (Float(rect.width) / mediaModel.trackLength) * mediaModel.elapsedTime
+                        }
+                        
                         elapsedText = timeFormatted(Int(mediaModel.elapsedTime))
                         totalTimeText = timeFormatted(Int(mediaModel.trackLength))
                     }
             }
-            .cornerRadius(sliderHeight/2)
+            .cornerRadius(Settings.timelineHeight/2)
             
             //Max time label
             Text(totalTimeText)

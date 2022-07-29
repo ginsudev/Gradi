@@ -22,7 +22,6 @@ struct GRControls: View {
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 34, height: 34)
-                    .aspectRatio(contentMode: .fit)
             }
             .buttonStyle(ScaleButtonStyle())
             
@@ -33,7 +32,6 @@ struct GRControls: View {
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 44, height: 44)
-                    .aspectRatio(contentMode: .fit)
             }
             .buttonStyle(ScaleButtonStyle())
             
@@ -44,7 +42,6 @@ struct GRControls: View {
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 34, height: 34)
-                    .aspectRatio(contentMode: .fit)
             }
             .buttonStyle(ScaleButtonStyle())
         }

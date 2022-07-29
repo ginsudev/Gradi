@@ -2,7 +2,7 @@ ARCHS = arm64 arm64e
 THEOS_DEVICE_IP = root@localhost -p 2222
 TARGET := iphone:clang:15.5:14.4
 INSTALL_TARGET_PROCESSES = SpringBoard
-PACKAGE_VERSION = 2.1.1
+PACKAGE_VERSION = 2.1.2
 
 include $(THEOS)/makefiles/common.mk
 

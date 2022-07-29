@@ -58,6 +58,10 @@ struct SBIconImageInfo {
 @interface PLPlatterView : UIView
 @end
 
+@interface SBLockScreenManager : NSObject
+- (BOOL)isLockScreenActive;
+@end
+
 @interface CSMediaControlsView : UIView
 @end
 
