@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class GRHostingController<Content>: UIHostingController<Content> where Content: View {
+final class GRHostingController<Content>: UIHostingController<Content> where Content: View {
     override func _canShowWhileLocked() -> Bool {
         return true
     }

@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIColor {
-    func suitableForegroundColour() -> UIColor {
+    public func suitableForegroundColour() -> UIColor {
         let originalCGColor = self.cgColor
         let RGBCGColor = originalCGColor.converted(to: CGColorSpaceCreateDeviceRGB(), intent: .defaultIntent, options: nil)!
         let components = RGBCGColor.components!

@@ -12,6 +12,7 @@ import AVKit
 struct GRHeader: View {
     
     @EnvironmentObject var mediaModel: GRMediaModel
+    @State var renderingMode: Image.TemplateRenderingMode = .original
 
     var body: some View {
         HStack {
@@ -20,9 +21,14 @@ struct GRHeader: View {
             }){
                 HStack {
                     Image(uiImage: mediaModel.nowPlayingAppIcon)
+                        .renderingMode(renderingMode)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
                         .frame(alignment: .leading)
+                        .scaledToFit()
+                        .foregroundColor(Color(mediaModel.foregroundColour))
+                        .onChange(of: mediaModel.nowPlayingAppIcon) { image in
+                            renderingMode = image.isSymbolImage ? .template : .original
+                        }
                     
                     Text(mediaModel.routeName.uppercased())
                         .font(Font.system(size: 10, weight: .medium, design: .rounded))

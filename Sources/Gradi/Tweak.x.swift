@@ -70,8 +70,8 @@ class SBMediaController_Hook: ClassHook<SBMediaController> {
         orig._mediaRemoteNowPlayingApplicationIsPlayingDidChange(arg1)
         
         //Get the now playing app icon
-        if let mediaApp = target.nowPlayingApplication() {
-            GRMediaModel.sharedInstance.nowPlayingAppIcon = UIImage.appIcon(withBundleIdentifier: mediaApp.bundleIdentifier)
+        if let nowPlayingApp = target.nowPlayingApplication() {
+            GRMediaModel.sharedInstance.nowPlayingAppIcon = UIImage(withBundleIdentifier: nowPlayingApp.bundleIdentifier)
         } else {
             GRMediaModel.sharedInstance.nowPlayingAppIcon = UIImage(systemName: "airplayaudio")!
         }

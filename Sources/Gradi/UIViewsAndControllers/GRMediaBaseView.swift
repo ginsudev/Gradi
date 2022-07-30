@@ -7,7 +7,7 @@
 
 import GradiC
 
-class GRMediaBaseView: UIView, PLPlatter {
+final class GRMediaBaseView: UIView, PLPlatter {
     var hasShadow: Bool = false
     
     var isBackgroundBlurred: Bool = false

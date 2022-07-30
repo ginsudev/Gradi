@@ -10,7 +10,6 @@ import SwiftUI
 struct GRMediaContainer: View {
     
     @StateObject var mediaModel = GRMediaModel.sharedInstance
-    private var padding = Settings.cornerRadius * 2
     
     var body: some View {
         ZStack {
@@ -19,20 +18,20 @@ struct GRMediaContainer: View {
             VStack {
                 GRHeader()
                     .frame(maxWidth: .infinity, maxHeight: 18)
-                    .padding(.trailing, Settings.height - padding)
+                    .padding(.trailing, Settings.height - Settings.cornerRadius)
                 
                 GRBody()
-                    .padding(.trailing, Settings.height - 17 - padding)
+                    .padding(.trailing, Settings.height - 17 - Settings.cornerRadius)
                 
                 if Settings.showTimeline {
                     GRTimeline()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.trailing, Settings.height - 17 - padding)
+                        .padding(.trailing, Settings.height - 17 - Settings.cornerRadius)
                 }
 
                 Spacer()
             }
-            .padding(padding)
+            .padding(Settings.cornerRadius)
         }
         .environmentObject(mediaModel)
         .background(Color(mediaModel.artworkColour))

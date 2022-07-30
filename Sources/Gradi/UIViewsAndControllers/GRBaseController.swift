@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GRBaseController: UIViewController {
+final class GRBaseController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
