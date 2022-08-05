@@ -14,5 +14,7 @@
 	<false/>
 	<key>timelineHeight</key>
 	<real>5</real>
+	<key>scrollingLabels</key>
+	<false/>
 </dict>
 </plist>

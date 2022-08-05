@@ -9,7 +9,7 @@ import GradiC
 
 final class GRManager: NSObject {
     static let sharedInstance = GRManager()
-    var timer = Timer()
+    private var timer = Timer()
     var timerRunning = false
     
     public func updateInfo() {
@@ -75,7 +75,7 @@ final class GRManager: NSObject {
         }
         
         //Only start timer if media is playing.
-        guard SBMediaController.sharedInstance().nowPlayingApplication() != nil else {
+        guard SBMediaController.sharedInstance().nowPlayingApplication() != nil && !SBMediaController.sharedInstance().isPaused() else {
             return
         }
         

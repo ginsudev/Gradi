@@ -11,6 +11,7 @@ struct Settings {
     static var fontType: Font.Design!
     static var showTimeline: Bool!
     static var timelineHeight: CGFloat!
+    static var scrollingLabels: Bool!
 }
 
 struct tweak: HookGroup {}
@@ -109,8 +110,6 @@ class SpringBoard_Hook: ClassHook<SpringBoard> {
 
 class SBLockScreenManager_Hook: ClassHook<SBLockScreenManager> {
     typealias Group = timeline
-
-    @Property (.nonatomic, .retain) var screenOn: Bool = false
     
     func lockScreenViewControllerDidDismiss() {
         orig.lockScreenViewControllerDidDismiss()
@@ -121,7 +120,7 @@ class SBLockScreenManager_Hook: ClassHook<SBLockScreenManager> {
     func lockScreenViewControllerDidPresent() {
         orig.lockScreenViewControllerDidPresent()
         
-        guard screenOn else {
+        guard GRMediaModel.sharedInstance.screenOn else {
             return
         }
         
@@ -140,10 +139,10 @@ class SBLockScreenManager_Hook: ClassHook<SBLockScreenManager> {
             return
         }
         
-        screenOn = updatedBacklightLevel != 0
+        GRMediaModel.sharedInstance.screenOn = updatedBacklightLevel != 0
         
         //Screen turned on/off.
-        GRManager.sharedInstance.toggleTimer(on: screenOn)
+        GRManager.sharedInstance.toggleTimer(on: GRMediaModel.sharedInstance.screenOn)
     }
 }
 
@@ -181,6 +180,7 @@ fileprivate func readPrefs() {
     Settings.cornerRadius = dict["cornerRadius"] as? CGFloat ?? 5.0
     Settings.showTimeline = dict["showTimeline"] as? Bool ?? false
     Settings.timelineHeight = dict["timelineHeight"] as? CGFloat ?? 5.0
+    Settings.scrollingLabels = dict["scrollingLabels"] as? Bool ?? false
 
     let fontType = dict["fontType"] as? Int ?? 2
     switch fontType {

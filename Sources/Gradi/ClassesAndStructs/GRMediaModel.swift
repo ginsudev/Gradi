@@ -39,5 +39,8 @@ final class GRMediaModel: ObservableObject {
     
     @Published var foregroundColour: UIColor = .white
     
+    //Lock screen visible state
+    @Published var screenOn = false
+    
     private init() {}
 }

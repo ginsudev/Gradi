@@ -130,6 +130,30 @@
 			<key>dynamicRule</key>
 			<string>showTimelineStatus,s,1</string>
 		</dict>
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Miscellaneous</string>
+            <key>footerText</key>
+            <string>Scroll the track/artist name labels if they are long enough.</string>
+        </dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>cellClass</key>
+			<string>PSSubtitleSwitchTableCell</string>
+			<key>cellSubtitleText</key>
+			<string>Marquee effect on labels</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.ginsu.gradi</string>
+			<key>key</key>
+			<string>scrollingLabels</string>
+			<key>label</key>
+			<string>Scroll labels</string>
+		</dict>
 	</array>
 	<key>title</key>
 	<string>Behaviour</string>
