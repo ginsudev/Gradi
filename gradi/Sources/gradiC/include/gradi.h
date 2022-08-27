@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <Preferences/Preferences.h>
 #import <libgscommon/libgscommon.h>
+#import <libgscommon/libgsutils.h>
 
 @interface UIView (Private)
 - (UIViewController *)_viewControllerForAncestor;
@@ -13,4 +14,17 @@
 @interface PSSpecifier (Private)
 -(void)performSetterWithValue:(id)value;
 -(id)performGetter;
+@end
+
+@interface GradiThemeCell : UITableViewCell
+@property (nonatomic, strong) NSString *identifier;
+@property (nonatomic, strong) UILabel *title;
+@property (nonatomic, strong) UILabel *subtitle;
+@end
+
+@interface GradiThemePickerController : PSViewController <UITableViewDataSource, UITableViewDelegate>
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSString *prefsPlist;
+@property (nonatomic, strong) NSString *themeDir;
+@property (nonatomic, strong) NSMutableArray *themes;
 @end

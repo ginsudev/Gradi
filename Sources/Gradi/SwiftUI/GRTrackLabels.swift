@@ -23,8 +23,8 @@ struct GRTrackLabels: View {
                         .font(.system(size: 15, weight: .bold, design: Settings.fontType))
                 }
                 .marqueeDuration(5)
-                .marqueeIdleAlignment(.leading)
-                .marqueeDirection(UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .right2left : .left2right)
+                .marqueeIdleAlignment(UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .leading : .trailing)
+                .marqueeDirection(.right2left)
                 .marqueeAutoreverses(false)
                 .marqueeWhenNotFit(true)
                 
@@ -35,8 +35,8 @@ struct GRTrackLabels: View {
                         .font(.system(size: 14, weight: .regular, design: Settings.fontType))
                 }
                 .marqueeDuration(4)
-                .marqueeIdleAlignment(.leading)
-                .marqueeDirection(UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .right2left : .left2right)
+                .marqueeIdleAlignment(UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .leading : .trailing)
+                .marqueeDirection(.right2left)
                 .marqueeAutoreverses(false)
                 .marqueeWhenNotFit(true)
             }

@@ -18,7 +18,7 @@ struct GRControls: View {
             Button(action: {
                 SBMediaController.sharedInstance().changeTrack(-1, eventSource: 0)
             }){
-                Image(uiImage: UIImage(named: "/Library/Application Support/Gradi/previous.png")!)
+                Image(uiImage: UIImage(named: "\(GRManager.sharedInstance.themePath())previous.png")!)
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 34, height: 34)
@@ -38,7 +38,7 @@ struct GRControls: View {
             Button(action: {
                 SBMediaController.sharedInstance().changeTrack(1, eventSource: 0)
             }){
-                Image(uiImage: UIImage(named: "/Library/Application Support/Gradi/next.png")!)
+                Image(uiImage: UIImage(named: "\(GRManager.sharedInstance.themePath())next.png")!)
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 34, height: 34)

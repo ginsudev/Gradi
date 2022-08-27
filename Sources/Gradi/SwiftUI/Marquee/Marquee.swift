@@ -82,6 +82,7 @@ public struct Marquee<Content> : View where Content : View {
     }
     
     private func offsetX(proxy: GeometryProxy) -> CGFloat {
+        NSLog("[Gradi]: state=\(self.state)")
         switch self.state {
         case .idle:
             switch idleAlignment {

@@ -28,7 +28,7 @@ final class GRMediaModel: ObservableObject {
     @Published var elapsedTime: Float = 0.0
     
     //Dynamic icons
-    @Published var playPauseIcon = UIImage(named: "/Library/Application Support/Gradi/pause.png")
+    @Published var playPauseIcon = UIImage(named: "\(GRManager.sharedInstance.themePath())pause.png")
 
     //Colours
     @Published var artworkColour: UIColor = .black {

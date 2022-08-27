@@ -91,7 +91,7 @@ final class GRManager: NSObject {
     }
     
     public func togglePlayPause(shouldPlay play: Bool) {
-        let iconPath = "/Library/Application Support/Gradi/\(play ? "pause": "play").png"
+        let iconPath = "\(themePath())\(play ? "pause": "play").png"
         GRMediaModel.sharedInstance.playPauseIcon = UIImage(named: iconPath)
     }
     
@@ -113,6 +113,10 @@ final class GRManager: NSObject {
         
         let service = FBSSystemService.sharedService() as! FBSSystemService
         service.openApplication(bundleID, options: launchOptions, withResult: nil)
+    }
+    
+    public func themePath() -> String {
+        return "\(GSUtilities.sharedInstance().rootPrefix()!)Library/Application Support/Gradi/Themes/\(Settings.themeName!)/"
     }
     
     private override init() {}

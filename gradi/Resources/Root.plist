@@ -30,6 +30,16 @@
             <key>cell</key>
             <string>PSLinkCell</string>
             <key>detail</key>
+            <string>gradi.GradiAppearanceController</string>
+            <key>isController</key>
+            <true/>
+            <key>label</key>
+            <string>Appearance</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSLinkCell</string>
+            <key>detail</key>
             <string>gradi.GradiBehaviourController</string>
             <key>isController</key>
             <true/>
@@ -63,5 +73,7 @@
 	</array>
 	<key>title</key>
 	<string>Gradi</string>
+	<key>themeName</key>
+	<string>Sharp</string>
 </dict>
 </plist>

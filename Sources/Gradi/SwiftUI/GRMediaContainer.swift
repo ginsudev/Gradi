@@ -16,20 +16,31 @@ struct GRMediaContainer: View {
             GRArtworkGradient()
                 .frame(maxWidth: .infinity)
             VStack {
-                GRHeader()
-                    .frame(maxWidth: .infinity, maxHeight: 18)
-                    .padding(.trailing, Settings.height - Settings.cornerRadius)
+                if !Settings.showNPInfo && Settings.showTimeline {
+                    Spacer()
+                }
+                
+                if Settings.showNPInfo {
+                    Spacer()
+                    GRHeader()
+                        .frame(maxWidth: .infinity, maxHeight: 18)
+                        .padding(.trailing, Settings.height - Settings.cornerRadius)
+                }
                 
                 GRBody()
-                    .padding(.trailing, Settings.height - 17 - Settings.cornerRadius)
+                    .padding(.trailing, Settings.height - 17.0 - Settings.cornerRadius)
                 
                 if Settings.showTimeline {
                     GRTimeline()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.trailing, Settings.height - 17 - Settings.cornerRadius)
+                        .padding(.trailing, Settings.height - 17.0 - Settings.cornerRadius)
+                    Spacer()
+                }
+                
+                if !Settings.showTimeline && Settings.showNPInfo {
+                    Spacer()
                 }
 
-                Spacer()
             }
             .padding(Settings.cornerRadius)
         }

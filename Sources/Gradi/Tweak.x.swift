@@ -10,8 +10,10 @@ struct Settings {
     static var cornerRadius: CGFloat!
     static var fontType: Font.Design!
     static var showTimeline: Bool!
+    static var showNPInfo: Bool!
     static var timelineHeight: CGFloat!
     static var scrollingLabels: Bool!
+    static var themeName: String!
 }
 
 struct tweak: HookGroup {}
@@ -179,8 +181,10 @@ fileprivate func readPrefs() {
     Settings.height = dict["height"] as? Double ?? 120.0
     Settings.cornerRadius = dict["cornerRadius"] as? CGFloat ?? 5.0
     Settings.showTimeline = dict["showTimeline"] as? Bool ?? false
+    Settings.showNPInfo = dict["showNPInfo"] as? Bool ?? true
     Settings.timelineHeight = dict["timelineHeight"] as? CGFloat ?? 5.0
     Settings.scrollingLabels = dict["scrollingLabels"] as? Bool ?? false
+    Settings.themeName = dict["themeName"] as? String ?? "Sharp"
 
     let fontType = dict["fontType"] as? Int ?? 2
     switch fontType {

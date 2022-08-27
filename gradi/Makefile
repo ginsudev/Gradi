@@ -5,7 +5,7 @@ include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = gradi
 
-gradi_LIBRARIES = gscommon
+gradi_LIBRARIES = gscommon gsutils
 gradi_FILES = $(shell find Sources/gradi -name '*.swift') $(shell find Sources/gradiC -name '*.m' -o -name '*.c' -o -name '*.mm' -o -name '*.cpp')
 gradi_INSTALL_PATH = /Library/PreferenceBundles
 gradi_SWIFTFLAGS = -ISources/gradiC/include

@@ -16,5 +16,7 @@
 	<real>5</real>
 	<key>scrollingLabels</key>
 	<false/>
+	<key>showNPInfo</key>
+	<true/>
 </dict>
 </plist>

@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <AVKit/AVKit.h>
 #import "MediaRemote.h"
+#import <libgscommon/libgsutils.h>
 
 FOUNDATION_EXPORT NSString *const FBSOpenApplicationOptionKeyUnlockDevice;
 FOUNDATION_EXPORT NSString *const FBSOpenApplicationOptionKeyActivateSuspended;
