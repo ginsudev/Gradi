@@ -2,131 +2,122 @@
 //  Marquee.swift
 //
 //
-//  Created by CatchZeng on 2020/11/23.
+//  Created by Noah Little on 2022/8/22.
 //
 
 import SwiftUI
 
-public enum MarqueeDirection {
-    case right2left
-    case left2right
+enum AnimationState {
+    case animating, idle
 }
 
-private enum MarqueeState {
-    case idle
-    case ready
-    case animating
-}
+struct Marquee: View {
+    
+    @Binding var text: String
+    @Binding var screenOn: Bool
+    
+    @State private var textWidth: CGFloat = 0
+    @State private var scrollFrame = CGRect()
+    @State private var offset: CGFloat = 0
+    
+    @State private var animationState: AnimationState = .idle
+    @State private var animationPhases = [DispatchWorkItem]()
 
-public struct Marquee<Content> : View where Content : View {
-    @Environment(\.marqueeDuration) var duration
-    @Environment(\.marqueeAutoreverses) var autoreverses: Bool
-    @Environment(\.marqueeDirection) var direction: MarqueeDirection
-    @Environment(\.marqueeWhenNotFit) var stopWhenNotFit: Bool
-    @Environment(\.marqueeIdleAlignment) var idleAlignment: HorizontalAlignment
+    var font: Font
+    var animationTime: Double
+    var delayTime: Double
     
-    private var content: () -> Content
-    @State private var state: MarqueeState = .idle
-    @State private var contentWidth: CGFloat = 0
-    @State private var isAppear = false
-    
-    @EnvironmentObject var mediaModel: GRMediaModel
-    
-    public init(@ViewBuilder content: @escaping () -> Content) {
-        self.content = content
-    }
-    
-    public var body: some View {
-        GeometryReader { proxy in
-            VStack {
-                if isAppear {
-                    content()
-                        .background(GeometryBackground())
-                        .fixedSize()
-                        .myOffset(x: offsetX(proxy: proxy), y: 0)
-                        .frame(maxHeight: .infinity)
-                } else {
-                    Text("")
+    var body: some View {
+        //Horizontal scrollview
+        ScrollView(.horizontal, showsIndicators: false) {
+            Text(text)
+                .font(font)
+                .lineLimit(1)
+                .multilineTextAlignment(.leading)
+                .offset(x: offset)
+                .background(ViewGeometry())
+                .onPreferenceChange(ViewSizeKey.self) {
+                    textWidth = $0.width
+                }
+        }
+        .disabled(true)
+        .background(GeometryGetter(rect: $scrollFrame))
+        
+        .onAppear {
+            DispatchQueue.main.async {
+                animate()
+            }
+        }
+        
+        .onChange(of: textWidth) { _ in
+            DispatchQueue.main.async {
+                if animationState == .animating {
+                    animationPhases.forEach { $0.cancel() }
+                    animationPhases.removeAll()
+                }
+                
+                offset = 0
+                
+                guard canAnimate() else {
+                    return
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    animate()
                 }
             }
-            .onPreferenceChange(WidthKey.self, perform: { value in
-                self.contentWidth = value
-                resetAnimation(duration: duration, autoreverses: autoreverses, proxy: proxy)
-            })
-            .onAppear {
-                self.isAppear = true
-                resetAnimation(duration: duration, autoreverses: autoreverses, proxy: proxy)
-            }
-            .onDisappear {
-                self.isAppear = false
-            }
-            .onChange(of: duration) { [] newDuration in
-                resetAnimation(duration: newDuration, autoreverses: self.autoreverses, proxy: proxy)
-            }
-            .onChange(of: autoreverses) { [] newAutoreverses in
-                resetAnimation(duration: self.duration, autoreverses: newAutoreverses, proxy: proxy)
-            }
-            .onChange(of: direction) { [] _ in
-                resetAnimation(duration: duration, autoreverses: autoreverses, proxy: proxy)
-            }
-            .onChange(of: mediaModel.screenOn) { screenOn in
-                if !screenOn {
-                    stopAnimation()
-                } else {
-                    if state != .animating {
-                        resetAnimation(duration: self.duration, autoreverses: autoreverses, proxy: proxy)
-                    }
+        }
+        
+        .onChange(of: screenOn) { _ in
+            DispatchQueue.main.async {
+                if animationState == .animating {
+                    animationPhases.forEach { $0.cancel() }
+                    animationPhases.removeAll()
                 }
+                
+                offset = 0
+                animate()
             }
-        }.clipped()
-    }
-    
-    private func offsetX(proxy: GeometryProxy) -> CGFloat {
-        NSLog("[Gradi]: state=\(self.state)")
-        switch self.state {
-        case .idle:
-            switch idleAlignment {
-            case .center:
-                return 0.5*(proxy.size.width-contentWidth)
-            case .trailing:
-                return proxy.size.width-contentWidth
-            default:
-                return 0
-            }
-        case .ready:
-            return (direction == .right2left) ? proxy.size.width : -contentWidth
-        case .animating:
-            return (direction == .right2left) ? -contentWidth : proxy.size.width
         }
     }
     
-    private func resetAnimation(duration: Double, autoreverses: Bool, proxy: GeometryProxy) {
-        if duration == 0 || duration == Double.infinity {
-            stopAnimation()
-        } else {
-            startAnimation(duration: duration, autoreverses: autoreverses, proxy: proxy)
-        }
-    }
-    
-    private func startAnimation(duration: Double, autoreverses: Bool, proxy: GeometryProxy) {
-        let isNotFit = contentWidth < proxy.size.width
+    private func animate() {
+        animationState = .idle
 
-        guard !(stopWhenNotFit && isNotFit) && Settings.scrollingLabels else {
-            stopAnimation()
+        guard canAnimate() else {
             return
         }
         
-        withAnimation(.instant) {
-            self.state = .ready
-            withAnimation(Animation.linear(duration: duration).repeatForever(autoreverses: autoreverses)) {
-                self.state = .animating
+        animationState = .animating
+        
+        let offLeft = DispatchWorkItem {
+            withAnimation(.linear(duration: (animationTime / 0.5))) {
+                offset = -textWidth
             }
         }
+        
+        let fullRightToZero = DispatchWorkItem {
+            offset = scrollFrame.width
+
+            withAnimation(.linear(duration: animationTime)) {
+                offset = 0
+            }
+        }
+        
+        let resetAnimation = DispatchWorkItem {
+            self.animate()
+        }
+        
+        self.animationPhases.append(offLeft)
+        self.animationPhases.append(fullRightToZero)
+        self.animationPhases.append(resetAnimation)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayTime, execute: animationPhases[0])
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayTime + (animationTime / 0.5), execute: animationPhases[1])
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayTime + (animationTime / 0.5) + (animationTime), execute: animationPhases[2])
     }
     
-    private func stopAnimation() {
-        withAnimation(.instant) {
-            self.state = .idle
-        }
+    private func canAnimate() -> Bool {
+        return (textWidth >= scrollFrame.width) && screenOn && Settings.scrollingLabels
     }
 }

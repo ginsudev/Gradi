@@ -16,12 +16,12 @@ struct Settings {
     static var themeName: String!
 }
 
-struct tweak: HookGroup {}
-struct timeline: HookGroup {}
+struct Main: HookGroup {}
+struct LockscreenOberver: HookGroup {}
 
 //MARK: - Gradi media player initialisation.
 class CSAdjunctItemView_Hook: ClassHook<CSAdjunctItemView> {
-    typealias Group = tweak
+    typealias Group = Main
 
     func _updateSizeToMimic() {
         orig._updateSizeToMimic()
@@ -56,7 +56,7 @@ class CSAdjunctItemView_Hook: ClassHook<CSAdjunctItemView> {
 
 //MARK: - Updating route name on change
 class MPAVRoutingController_Hook: ClassHook<MPAVRoutingController> {
-    typealias Group = tweak
+    typealias Group = Main
 
     func _scheduleSendDelegateRoutesChanged() {
         orig._scheduleSendDelegateRoutesChanged()
@@ -67,7 +67,7 @@ class MPAVRoutingController_Hook: ClassHook<MPAVRoutingController> {
 
 //MARK: - Now playing app and currently playing track info.
 class SBMediaController_Hook: ClassHook<SBMediaController> {
-    typealias Group = tweak
+    typealias Group = Main
     
     func _mediaRemoteNowPlayingApplicationIsPlayingDidChange(_ arg1: AnyObject) {
         orig._mediaRemoteNowPlayingApplicationIsPlayingDidChange(arg1)
@@ -98,7 +98,7 @@ class SBMediaController_Hook: ClassHook<SBMediaController> {
 
 //MARK: - Refresh media info on SpringBoard launch.
 class SpringBoard_Hook: ClassHook<SpringBoard> {
-    typealias Group = tweak
+    typealias Group = Main
     
     func applicationDidFinishLaunching(_ application: AnyObject) {
         orig.applicationDidFinishLaunching(application)
@@ -111,7 +111,7 @@ class SpringBoard_Hook: ClassHook<SpringBoard> {
 }
 
 class SBLockScreenManager_Hook: ClassHook<SBLockScreenManager> {
-    typealias Group = timeline
+    typealias Group = LockscreenOberver
     
     func lockScreenViewControllerDidDismiss() {
         orig.lockScreenViewControllerDidDismiss()
@@ -210,10 +210,10 @@ struct Gradi: Tweak {
     init() {
         readPrefs()
         if (Settings.isEnabled) {
-            tweak().activate()
+            Main().activate()
             
-            if Settings.showTimeline {
-                timeline().activate()
+            if Settings.showTimeline || Settings.scrollingLabels {
+                LockscreenOberver().activate()
             }
         }
     }

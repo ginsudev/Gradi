@@ -16,29 +16,17 @@ struct GRTrackLabels: View {
             GRManager.sharedInstance.openNowPlayingApp()
         }){
             VStack(alignment: .leading, spacing: 0) {
-                Marquee {
-                    Text(mediaModel.trackName)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.leading)
-                        .font(.system(size: 15, weight: .bold, design: Settings.fontType))
-                }
-                .marqueeDuration(5)
-                .marqueeIdleAlignment(UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .leading : .trailing)
-                .marqueeDirection(.right2left)
-                .marqueeAutoreverses(false)
-                .marqueeWhenNotFit(true)
+                Marquee(text: $mediaModel.trackName,
+                        screenOn: $mediaModel.screenOn,
+                        font: .system(size: 15, weight: .bold, design: Settings.fontType),
+                        animationTime: 3.0,
+                        delayTime: 1.0)
                 
-                Marquee {
-                    Text(mediaModel.artistName)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.leading)
-                        .font(.system(size: 14, weight: .regular, design: Settings.fontType))
-                }
-                .marqueeDuration(4)
-                .marqueeIdleAlignment(UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .leading : .trailing)
-                .marqueeDirection(.right2left)
-                .marqueeAutoreverses(false)
-                .marqueeWhenNotFit(true)
+                Marquee(text: $mediaModel.artistName,
+                        screenOn: $mediaModel.screenOn,
+                        font: .system(size: 14, weight: .regular, design: Settings.fontType),
+                        animationTime: 3.0,
+                        delayTime: 1.0)
             }
         }
     }

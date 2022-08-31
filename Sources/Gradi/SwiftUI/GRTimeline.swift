@@ -92,16 +92,3 @@ struct GRTimeline: View {
         return String(format: "%02d:%02d", arguments: [minutes, seconds])
     }
 }
-
-struct GeometryGetter: View {
-    @Binding var rect: CGRect
-
-    var body: some View {
-        GeometryReader { (g) -> Path in
-            DispatchQueue.main.async {
-                self.rect = g.frame(in: .global)
-            }
-            return Path()
-        }
-    }
-}
