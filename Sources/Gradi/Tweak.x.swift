@@ -3,19 +3,6 @@ import GradiC
 import CoreGraphics
 import SwiftUI
 
-//MARK: - Settings
-struct Settings {
-    static var isEnabled: Bool!
-    static var height: Double!
-    static var cornerRadius: CGFloat!
-    static var fontType: Font.Design!
-    static var showTimeline: Bool!
-    static var showNPInfo: Bool!
-    static var timelineHeight: CGFloat!
-    static var scrollingLabels: Bool!
-    static var themeName: String!
-}
-
 struct Main: HookGroup {}
 struct LockscreenOberver: HookGroup {}
 

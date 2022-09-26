@@ -12,6 +12,7 @@ enum AnimationState {
 }
 
 struct Marquee: View {
+    @EnvironmentObject var mediaModel: GRMediaModel
     
     @Binding var text: String
     @Binding var screenOn: Bool
@@ -22,6 +23,8 @@ struct Marquee: View {
     
     @State private var animationState: AnimationState = .idle
     @State private var animationPhases = [DispatchWorkItem]()
+    
+    @State private var canTextAnimate = false
 
     var font: Font
     var animationTime: Double
@@ -40,7 +43,9 @@ struct Marquee: View {
                     textWidth = $0.width
                 }
         }
+        
         .disabled(true)
+        
         .background(GeometryGetter(rect: $scrollFrame))
         
         .onAppear {
@@ -79,6 +84,26 @@ struct Marquee: View {
                 animate()
             }
         }
+        
+        .overlay(
+            HStack {
+                if canTextAnimate {
+
+                LinearGradient(colors: [Color(mediaModel.artworkColour), Color(mediaModel.artworkColour).opacity(0.0)],
+                               startPoint: .leading,
+                               endPoint: .trailing)
+                .frame(width: 15)
+                
+                Spacer()
+                
+                LinearGradient(colors: [Color(mediaModel.artworkColour), Color(mediaModel.artworkColour).opacity(0.0)].reversed(),
+                               startPoint: .leading,
+                               endPoint: .trailing)
+                .frame(width: 15)
+                }
+            }
+            
+        )
     }
     
     private func animate() {
@@ -118,6 +143,7 @@ struct Marquee: View {
     }
     
     private func canAnimate() -> Bool {
-        return (textWidth >= scrollFrame.width) && screenOn && Settings.scrollingLabels
+        canTextAnimate = (textWidth >= scrollFrame.width) && screenOn && Settings.scrollingLabels
+        return canTextAnimate
     }
 }
